@@ -1,6 +1,6 @@
 from googleanalytics import util, Config
 import abc
-import urllib
+import urllib2, urllib
 
 class HttpRequest(object):
     __metaclass__ = abc.ABCMeta
@@ -19,29 +19,24 @@ class HttpRequest(object):
 
         use_post = len(query_string) > 2036
 
-        if use_post:
-            r = 'POST /p%s HTTP/1.0\r\n' % (self.config.endpoint_path)
-        else:
-            r = 'GET %s?%s HTTP/1.0\r\n' % (self.config.endpoint_path,
-                                            query_string)
-        r += 'Host: %s\r\n' % (self.config.endpoint_host)
+        headers = {}
 
         if self.user_agent:
-            r += 'User-Agent: %s\r\n' % (self.user_agent)
+            headers['User-Agent'] = self.user_agent
 
         if self.x_forwarded_for:
-            r += 'X-Forwarded-For: %s\r\n' % (self.x_forwarded_for)
+            headers['X-Forwarded-For'] = self.x_forwarded_for
 
+        url = 'http://%s%s' % (self.config.endpoint_host,
+                               self.config.endpoint_path)
         if use_post:
             # Don't ask me why "text/plain", but ga.js says so :)
-            r += 'Content-Type: text/plain\r\n'
-            r += 'Content-Length: %ld\r\n' % (len(query_string))
-
-        r += 'Connection: close\r\n'
-        r += '\r\n\r\n'
-
-        if use_post:
-            r += query_string
+            headers['Content-Type'] = 'text/plain'
+            r = urllib2.Request(url, data=parameters.to_dict(), headers=headers)
+        else:
+            url += '?%s' % (util.convert_to_uri_component_encoding(
+                urllib.urlencode(parameters.to_dict())))
+            r = urllib2.Request(url, headers=headers)
 
         return r
         
@@ -57,9 +52,10 @@ class HttpRequest(object):
         if self.config.endpoint_host:
             timeout = self.config.request_timeout
 
-            # TODO: Use urllib to send the request
-            print request
-            raise Exception('Unimplemented')
+            response = urllib2.urlopen(request, timeout=timeout)
+
+            meta = response.info()
+            content = response.read()
 
         logging_callback = self.config.logging_callback
         if logging_callback:

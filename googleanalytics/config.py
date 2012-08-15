@@ -8,4 +8,5 @@ class Config(object):
         self.endpoint_path = '/__utm.gif'
         self.anonymize_ip_addresses = False
         self.sitespeed_sample_rate = 1
+        self.logging_callback = None
 
