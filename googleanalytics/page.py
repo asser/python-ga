@@ -7,8 +7,8 @@ class Page(object):
 
     def set_path(self, path):
         if path and path[0] != '/':
-            raise Exception('The page path should always start with a slash
-                            ("/").')
+            raise Exception('The page path should always start with a slash '
+                            '("/").')
 
         self.path = path
 

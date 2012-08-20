@@ -1,3 +1,6 @@
+#!/usr/bin/python2
+# coding: utf-8
+
 from distutils.core import setup
 
 setup(
@@ -5,7 +8,7 @@ setup(
     version='0.1.0',
     author='Asser Schrøder Femø',
     author_email='asser@diku.dk',
-    packages=['googleanalytics','googleanalytics.test'],
+    packages=['googleanalytics','googleanalytics.test','googleanalytics.request'],
     scripts=[],
     url='http://github.com/asser/python-ga',
     license='LICENSE.txt',
