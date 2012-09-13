@@ -3,3 +3,4 @@ from tracker import Tracker
 from visitor import Visitor
 from event import Event
 from session import Session
+from campaign import Campaign
