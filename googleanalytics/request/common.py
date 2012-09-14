@@ -196,10 +196,10 @@ class Request(HttpRequest):
 
         if campaign:
             p._utmz = '.'.join([
-                self.generate_domain_hash(),
+                str(self.generate_domain_hash()),
                 campaign.creation_time.strftime('%s'),
-                self.visitor.visit_count,
-                campaign.response_count,
+                str(self.visitor.visit_count),
+                str(campaign.response_count),
             ]) + '.'
 
             data = {
@@ -213,9 +213,10 @@ class Request(HttpRequest):
                 'utmcct':   campaign.content,
             }
 
+            print data.items()
             p._utmz = self.CAMPAIGN_DELIMITER.join([
                 ('%s=%s' % (key, value.replace('+', '%20').replace(' ', '%20')))
-                for (key, value) in data.items()
+                for (key, value) in data.items() if value is not None
             ])
 
         return p

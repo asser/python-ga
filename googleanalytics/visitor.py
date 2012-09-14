@@ -4,21 +4,20 @@ import re
 
 class Visitor(object):
 
-    def __init__(self, init=True):
-        if init:
-            now = datetime.datetime.now()
-            self._unique_id = None
-            self.first_visit_time = now
-            self.previous_visit_time = now
-            self.current_visit_time = now
-            self.visit_count = 1
-            self.ip_address = None
-            self.user_agent = ''
-            self.locale = ''
-            self.flash_version = None
-            self.java_enabled = None
-            self.screen_color_depth = ''
-            self.screen_resolution = None
+    def __init__(self):
+        now = datetime.datetime.now()
+        self._unique_id = None
+        self.first_visit_time = now
+        self.previous_visit_time = now
+        self.current_visit_time = now
+        self.visit_count = 1
+        self.ip_address = None
+        self.user_agent = ''
+        self.locale = ''
+        self.flash_version = None
+        self.java_enabled = None
+        self.screen_color_depth = ''
+        self.screen_resolution = None
 
     @classmethod
     def from_utma(cls, value):
@@ -27,7 +26,7 @@ class Visitor(object):
         if len(parts) != 6:
             raise Exception('The given "__utma" cookie value is invalid.')
 
-        obj = cls(init=False)
+        obj = cls()
         obj.unique_id = int(parts[1])
         obj.first_visit_time = datetime.datetime.fromtimestamp(float(parts[2]))
         obj.previous_visit_time = datetime.datetime.fromtimestamp(float(parts[3]))
