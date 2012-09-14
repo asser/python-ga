@@ -22,28 +22,25 @@ class Visitor(object):
 
     @classmethod
     def from_utma(cls, value):
-        parts = value.split(',')
+        parts = value.split('.')
 
         if len(parts) != 6:
             raise Exception('The given "__utma" cookie value is invalid.')
 
         obj = cls(init=False)
-        obj.unique_id = parts[1]
-        obj.first_visit_time = datetime.fromtimestamp(parts[2])
-        obj.previous_visit_time = datetime.fromtimestamp(parts[3])
-        obj.current_visit_time = datetime.fromtimestamp(parts[4])
-        obj.visit_count = parts[5]
+        obj.unique_id = int(parts[1])
+        obj.first_visit_time = datetime.datetime.fromtimestamp(float(parts[2]))
+        obj.previous_visit_time = datetime.datetime.fromtimestamp(float(parts[3]))
+        obj.current_visit_time = datetime.datetime.fromtimestamp(float(parts[4]))
+        obj.visit_count = int(parts[5])
 
         return obj
 
-    @classmethod
-    def from_headers(cls, headers):
+    def from_headers(self, headers):
         """
         Will extract information for the "ip_address", "user_agent" and "locale"
         properties from the given HTTP header dictionary.
         """
-        obj = cls(init=False)
-
         try:
             # First IP address is the one of the client
             ip = headers['X_FORWARDED_FOR'].split(',')[0].strip()
@@ -59,24 +56,24 @@ class Visitor(object):
         if re.match(r'^(?:127\.0\.0\.1|10\.|192\.168\.|172\.(?:1[6-9]|2[0-9]|3[0-1])\.)', ip):
             ip = None
 
-        obj.ip_address = ip
+        self.ip_address = ip
 
-        obj.user_agent = headers.get('HTTP_USER_AGENT')
+        self.user_agent = headers.get('HTTP_USER_AGENT')
 
         if 'HTTP_ACCEPT_LANGUAGE' in headers:
-            parsed_locales = {}
+            parsed_locales = []
             res = re.findall(
                 r'(^|\s*,\s*)([a-zA-Z]{1,8}(-[a-zA-Z]{1,8})*)\s*(;\s*q\s*=\s*(1(\.0{0,3})?|0(\.[0-9]{0,3})))?', 
                 headers['HTTP_ACCEPT_LANGUAGE'], re.I)
             for r in res:
-                r[1] = r[1].replace('-', '_')
-                r[4] = 1 if not r[4] else r[4]
-                parsed_locales[r[1]] = r[4]
+                name = r[1].replace('-', '_')
+                value = 1 if not r[4] else r[4]
+                parsed_locales += [(name, value)]
 
-            obj.locale = sorted(parsed_locales.items(), key=lambda x: x[1],
+            self.locale = sorted(parsed_locales, key=lambda x: x[1],
                                  reverse=True)[0][0]
 
-        return obj
+        return self
 
     def generate_hash(self):
         return util.generate_hash(self.user_agent + self.screen_resolution +
@@ -99,7 +96,7 @@ class Visitor(object):
         return self._unique_id
     
     def add_session(self, session):
-        start_time = session.get_start_time()
+        start_time = session.start_time
         if start_time != self.current_visit_time:
             self.previous_visit_time = self.current_visit_time
             self.current_visit_time = start_time
