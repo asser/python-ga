@@ -1,6 +1,81 @@
 from googleanalytics import util, Config
 import abc
 import urllib2, urllib
+import sys
+
+# urlencode taken from urllib and patched to allow for supplying quote method
+def urlencode(query, doseq=0, quote_via=urllib.quote):  # {{{
+    """Encode a sequence of two-element tuples or dictionary into a URL query string.
+
+    If any values in the query arg are sequences and doseq is true, each
+    sequence element is converted to a separate parameter.
+
+    If the query arg is a sequence of two-element tuples, the order of the
+    parameters in the output will match the order of parameters in the
+    input.
+    """
+
+    try:
+        unicode
+    except NameError:
+        def _is_unicode(x):
+            return 0
+    else:
+        def _is_unicode(x):
+            return isinstance(x, unicode)
+
+    if hasattr(query,"items"):
+        # mapping objects
+        query = query.items()
+    else:
+        # it's a bother at times that strings and string-like objects are
+        # sequences...
+        try:
+            # non-sequence items should not work with len()
+            # non-empty strings will fail this
+            if len(query) and not isinstance(query[0], tuple):
+                raise TypeError
+            # zero-length sequences of all types will get here and succeed,
+            # but that's a minor nit - since the original implementation
+            # allowed empty dicts that type of behavior probably should be
+            # preserved for consistency
+        except TypeError:
+            ty,va,tb = sys.exc_info()
+            raise TypeError, "not a valid non-string sequence or mapping object", tb
+
+    l = []
+    if not doseq:
+        # preserve old behavior
+        for k, v in query:
+            k = quote_via(str(k))
+            v = quote_via(str(v))
+            l.append(k + '=' + v)
+    else:
+        for k, v in query:
+            k = quote_via(str(k))
+            if isinstance(v, str):
+                v = quote_via(v)
+                l.append(k + '=' + v)
+            elif _is_unicode(v):
+                # is there a reasonable way to convert to ASCII?
+                # encode generates a string, but "replace" or "ignore"
+                # lose information and "strict" can raise UnicodeError
+                v = quote_via(v.encode("ASCII","replace"))
+                l.append(k + '=' + v)
+            else:
+                try:
+                    # is this a sufficient test for sequence-ness?
+                    len(v)
+                except TypeError:
+                    # not a sequence
+                    v = quote_via(str(v))
+                    l.append(k + '=' + v)
+                else:
+                    # loop over the sequence
+                    for elt in v:
+                        l.append(k + '=' + quote_via(str(elt)))
+    return '&'.join(l)
+# end urlencode }}}
 
 class HttpRequest(object):
     __metaclass__ = abc.ABCMeta
@@ -14,7 +89,7 @@ class HttpRequest(object):
     def build_http_request(self):
         parameters = self.build_parameters()
       
-        query_string = urllib.urlencode(parameters.to_dict())
+        query_string = urlencode(parameters.to_dict())
         query_string = util.convert_to_uri_component_encoding(query_string)
 
         use_post = len(query_string) > 2036
@@ -35,7 +110,7 @@ class HttpRequest(object):
             r = urllib2.Request(url, data=parameters.to_dict(), headers=headers)
         else:
             url += '?%s' % (util.convert_to_uri_component_encoding(
-                urllib.urlencode(parameters.to_dict())))
+                urlencode(parameters.to_dict())))
             r = urllib2.Request(url, headers=headers)
 
         return r
@@ -213,7 +288,6 @@ class Request(HttpRequest):
                 'utmcct':   campaign.content,
             }
 
-            print data.items()
             p._utmz = self.CAMPAIGN_DELIMITER.join([
                 ('%s=%s' % (key, value.replace('+', '%20').replace(' ', '%20')))
                 for (key, value) in data.items() if value is not None
