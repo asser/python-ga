@@ -13,14 +13,14 @@ class Campaign(object):
         if type:
             self.type = type
 
-            if type == TYPE_DIRECT:
+            if type == self.TYPE_DIRECT:
                 self.name = '(direct)'
                 self.source = '(direct)'
                 self.medium = '(none)'
-            elif type == TYPE_REFERRAL:
+            elif type == self.TYPE_REFERRAL:
                 self.name = '(referral)'
                 self.medium = 'referral'
-            elif type == TYPE_ORGANIC:
+            elif type == self.TYPE_ORGANIC:
                 self.name = '(organic)'
                 self.medium = 'organic'
             else:
@@ -72,9 +72,9 @@ class Campaign(object):
     @classmethod
     def create_from_referrer(cls, url):
         obj = cls(cls.TYPE_REFERRAL)
-        url_info = urlparse(url)
-        self.source = url_info.netloc
-        self.content = url_info.path
+        url_info = urlparse.urlparse(url)
+        obj.source = url_info.netloc
+        obj.content = url_info.path
 
         return obj
 

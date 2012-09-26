@@ -16,5 +16,17 @@ class TestCampaign(unittest.TestCase):
         self.assertEqual(campaign.medium, 'organic')
         self.assertEqual(campaign.term, '(not provided)')
 
+    def test_create_from_referrer(self):
+        campaign = Campaign.create_from_referrer(
+            'http://www.google.dk/aclk?sa=L&ai=CKlaN9kBgUPuSBYHL8QOc04D4Dauih'
+            'LwCo5zdnDPG16brFggAEAEoAlChytmjB2DRmbmCiAjIAQGpAqf8vOjKUYc-qgQjT'
+            '9A1ysTd4R29eLJVCvuARQXfOybpRrnEXTk8pSpxRaCXeIU&sig=AOD64_2LXWpV-'
+            '1EajlJobt0MNp0t8o_00g&ved=0CBoQ0Qw&adurl=http://duck-it.dk&rct=j'
+            '&q=%22ideas+for+start+up%22'
+        )
+
+        self.assertEqual(campaign.source, 'www.google.dk')
+        self.assertEqual(campaign.content, '/aclk')
+
 if __name__ == '__main__':
     unittest.main()
