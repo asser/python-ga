@@ -288,7 +288,7 @@ class Request(HttpRequest):
                 'utmcct':   campaign.content,
             }
 
-            p._utmz = self.CAMPAIGN_DELIMITER.join([
+            p._utmz += self.CAMPAIGN_DELIMITER.join([
                 ('%s=%s' % (key, value.replace('+', '%20').replace(' ', '%20')))
                 for (key, value) in data.items() if value is not None
             ])
