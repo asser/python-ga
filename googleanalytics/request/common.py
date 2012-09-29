@@ -88,8 +88,11 @@ class HttpRequest(object):
 
     def build_http_request(self):
         parameters = self.build_parameters()
-      
-        query_string = urlencode(parameters.to_dict())
+
+        # Make sure urllib.quote does not have safe='/' as it does per default
+        def quote_qs(x):
+            return urllib.quote(x, '')
+        query_string = urlencode(parameters.to_dict(), quote_via=quote_qs)
         query_string = util.convert_to_uri_component_encoding(query_string)
 
         use_post = len(query_string) > 2036
@@ -110,7 +113,7 @@ class HttpRequest(object):
             r = urllib2.Request(url, data=parameters.to_dict(), headers=headers)
         else:
             url += '?%s' % (util.convert_to_uri_component_encoding(
-                urlencode(parameters.to_dict())))
+                urlencode(parameters.to_dict(), quote_via=quote_qs)))
             r = urllib2.Request(url, headers=headers)
 
         return r
