@@ -37,5 +37,12 @@ class TestSession(unittest.TestCase):
         self.assertEqual(session.track_count, 42)
 
 
+    def test_millisecond_timestamp(self):
+        session = Session.from_utmb('93487880.42.10.1347552475123')
+        self.assertEqual(session.start_time,
+                         datetime.datetime.fromtimestamp(float('1347552475.123')))
+
+
+
 if __name__ == '__main__':
     unittest.main()

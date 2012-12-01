@@ -16,7 +16,12 @@ class Session(object):
 
         obj = cls()
         obj.track_count = int(parts[1])
-        obj.start_time = datetime.datetime.fromtimestamp(float(parts[3]))
+
+        # XXX: Sometimes the __utmb cookie contains microsecond-timestamps
+        start_time = float(parts[3])
+        if len(parts[3]) >= 13:
+            start_time = start_time / 1e3
+        obj.start_time = datetime.datetime.fromtimestamp(start_time)
         return obj
 
     def generate_session_id(self):
