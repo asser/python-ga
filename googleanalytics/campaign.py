@@ -81,11 +81,11 @@ class Campaign(object):
     def validate(self):
         # NOTE: gaforflash states that id and gClickId must also be specified,
         # but that doesn't seem to be correct
-        if not self.source:
-            raise Exception('Campaigns need to have at least the "source" '
-                            'attribute defined.')
+        if not self.source and not self.g_click_id:
+            raise Exception('Campaigns need to have at least the "source" or '
+                            '"gclid" attribute defined.')
 
-    def increase_response_count(amount = 1):
+    def increase_response_count(self, amount = 1):
         self.response_count += amount
 
 
