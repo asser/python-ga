@@ -46,7 +46,7 @@ class Campaign(object):
         properties from the given "__utmz" cookie value.
         """
         params = value.split(Request.CAMPAIGN_DELIMITER)
-        parts = params[0].split('.', 5)
+        parts = params[0].split('.', 4)
         if len(parts) != 5:
             raise Exception('The given "__utmz" cookie value is invalid.')
 

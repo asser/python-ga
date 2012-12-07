@@ -16,6 +16,11 @@ class TestCampaign(unittest.TestCase):
         self.assertEqual(campaign.medium, 'organic')
         self.assertEqual(campaign.term, '(not provided)')
 
+        # Test that domain names with dots are handled correctly
+        campaign = Campaign()
+        campaign.from_utmz('1.1354284425.1.1.utmcsr=du113w.dub113.mail.live.com|utmccn=(referral)|utmcmd=referral|utmcct=/mail/InboxLight.aspx')
+        self.assertEqual(campaign.source, 'du113w.dub113.mail.live.com')
+
     def test_create_from_referrer(self):
         campaign = Campaign.create_from_referrer(
             'http://www.google.dk/aclk?sa=L&ai=CKlaN9kBgUPuSBYHL8QOc04D4Dauih'
