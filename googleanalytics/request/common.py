@@ -127,15 +127,22 @@ class HttpRequest(object):
         request = self.build_http_request()
         response = None
 
+        logging_callback = self.config.logging_callback
+
         if self.config.endpoint_host:
             timeout = self.config.request_timeout
 
-            response = urllib2.urlopen(request, timeout=timeout)
+            try:
+                response = urllib2.urlopen(request, timeout=timeout)
+            except urllib2.URLError:
+                # Call the log callback in case of error so the caller has a chance to inspect the URL
+                if logging_callback:
+                    logging_callback(request, response)
+                raise
 
-            meta = response.info()
-            content = response.read()
+            # meta = response.info()
+            # content = response.read()
 
-        logging_callback = self.config.logging_callback
         if logging_callback:
             logging_callback(request, response)
 
