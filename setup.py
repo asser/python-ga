@@ -5,7 +5,7 @@ from distutils.core import setup
 
 setup(
     name='googleanalytics',
-    version='0.3.6',
+    version='0.3.7',
     author='Asser Schrøder Femø',
     author_email='asser@diku.dk',
     packages=['googleanalytics','googleanalytics.test','googleanalytics.request'],
