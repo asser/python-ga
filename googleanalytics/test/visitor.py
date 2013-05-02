@@ -15,6 +15,13 @@ class TestVisitor(unittest.TestCase):
         self.assertEqual(visitor.current_visit_time,
                          datetime.datetime.fromtimestamp(float('1347552475')))
         self.assertEqual(visitor.visit_count, 2)
+
+    def test_64bit_visitor(self):
+        "Tests that the Visitor.from_utma method is able to handle 64-bit visitor IDs"
+        visitor = Visitor.from_utma(
+            '26821871.3028119289228160000.1235579004.1367328504.1367394766.237'
+        )
+        self.assertEqual(visitor.unique_id, 3028119289228160000)
         
     def test_session(self):
         session = Session()
