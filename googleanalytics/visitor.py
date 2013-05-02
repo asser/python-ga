@@ -27,7 +27,7 @@ class Visitor(object):
             raise Exception('The given "__utma" cookie value is invalid.')
 
         obj = cls()
-        obj.unique_id = int(parts[1])
+        obj.unique_id = long(parts[1])
         obj.first_visit_time = datetime.datetime.fromtimestamp(float(parts[2]))
         obj.previous_visit_time = datetime.datetime.fromtimestamp(float(parts[3]))
         obj.current_visit_time = datetime.datetime.fromtimestamp(float(parts[4]))
@@ -82,9 +82,9 @@ class Visitor(object):
         return ((util.generate_32bit_random() ^ self.generate_hash()) & 0x7fffffff)
 
     def set_unique_id(self, value):
-        if value < 0 or value > 0x7fffffff:
-            raise Exception('Visitor unique ID has to be a 32-bit integer '
-                            'between 0 and %d.' % (0x7fffffff))
+        if value < 0 or value > 0x7fffffffffffffff:
+            raise Exception('Visitor unique ID has to be a 64-bit integer '
+                            'between 0 and %d.' % (0x7fffffffffffffff))
 
         self._unique_id = value
 
