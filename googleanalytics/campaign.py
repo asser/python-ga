@@ -3,6 +3,7 @@ import urllib2
 import urlparse
 from request import Request
 
+
 class Campaign(object):
 
     TYPE_DIRECT = 'direct'
@@ -39,7 +40,6 @@ class Campaign(object):
         self.term = None
         self.content = None
 
-
     def from_utmz(self, value):
         """
         Will extract information for the "track_count" and "start_time"
@@ -63,8 +63,8 @@ class Campaign(object):
             'utmctr': 'term',
             'utmcct': 'content',
         }
-        
-        for (key, val) in [x.split('=') for x in [parts[4]] + params[1:]]:
+
+        for (key, _, val) in [x.partition('=') for x in [parts[4]] + params[1:]]:
             setattr(self, param_map[key], urllib2.unquote(val))
 
         return self
@@ -85,7 +85,5 @@ class Campaign(object):
             raise Exception('Campaigns need to have at least the "source" or '
                             '"gclid" attribute defined.')
 
-    def increase_response_count(self, amount = 1):
+    def increase_response_count(self, amount=1):
         self.response_count += amount
-
-

@@ -2,11 +2,13 @@ import unittest
 import datetime
 from googleanalytics import Campaign
 
+
 class TestCampaign(unittest.TestCase):
 
     def test_from_utmz(self):
         campaign = Campaign()
-        campaign.from_utmz('93487880.1346057154.6.4.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided)')
+        campaign.from_utmz('93487880.1346057154.6.4.utmcsr=google|utmccn=(organic)|utmcmd=organic|'
+                           'utmctr=(not%20provided)')
         self.assertEqual(campaign.creation_time,
                          datetime.datetime.fromtimestamp(float('1346057154')))
         self.assertEqual(campaign.response_count, 4)
@@ -18,8 +20,15 @@ class TestCampaign(unittest.TestCase):
 
         # Test that domain names with dots are handled correctly
         campaign = Campaign()
-        campaign.from_utmz('1.1354284425.1.1.utmcsr=du113w.dub113.mail.live.com|utmccn=(referral)|utmcmd=referral|utmcct=/mail/InboxLight.aspx')
+        campaign.from_utmz('1.1354284425.1.1.utmcsr=du113w.dub113.mail.live.com|utmccn=(referral)|utmcmd=referral|'
+                           'utmcct=/mail/InboxLight.aspx')
         self.assertEqual(campaign.source, 'du113w.dub113.mail.live.com')
+
+        # Test that unset utmcct value works
+        campaign = Campaign()
+        campaign.from_utmz('198093865.1372142701.1.1.utmcsr=afe2.specificclick.net|utmccn=(referral)|'
+                           'utmcmd=referral|utmcct')
+        self.assertEqual(campaign.content, '')
 
     def test_create_from_referrer(self):
         campaign = Campaign.create_from_referrer(
