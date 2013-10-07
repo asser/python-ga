@@ -6,8 +6,19 @@ class EventRequest(Request):
     X10_EVENT_PROJECT_ID = 5
     type = Request.TYPE_EVENT
 
+    def __init__(self, *args, **kwargs):
+        # Remove the page argument for the Request constructor
+        page = kwargs.get('page')
+        del kwargs['page']
+        super(EventRequest, self).__init__(*args, **kwargs)
+        self.page = page
+
     def build_parameters(self):
         p = super(EventRequest, self).build_parameters()
+
+        if self.page:
+            p.utmp = self.page['path']
+            p.utmdt = self.page['title']
 
         x10 = X10()
 

@@ -57,11 +57,11 @@ class Tracker(object):
         request.tracker = self
         request.fire()
 
-    def track_event(self, event, session, visitor):
+    def track_event(self, event, session, visitor, page=None):
         # Ensure that all required parameters are set
         event.validate()
 
-        request = EventRequest(self.config)
+        request = EventRequest(self.config, page=page)
         request.event = event
         request.session = session
         request.visitor = visitor
