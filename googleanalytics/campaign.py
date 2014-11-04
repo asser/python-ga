@@ -65,7 +65,7 @@ class Campaign(object):
         }
 
         for (key, _, val) in [x.partition('=') for x in [parts[4]] + params[1:]]:
-            if hasattr(self, param_map[key]):
+            if key in param_map:
                 setattr(self, param_map[key], urllib2.unquote(val))
             else:
                 # Ignore, the values might be malformed. We're probably not going to use them anyway. This was a problem
