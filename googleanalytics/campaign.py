@@ -65,7 +65,13 @@ class Campaign(object):
         }
 
         for (key, _, val) in [x.partition('=') for x in [parts[4]] + params[1:]]:
-            setattr(self, param_map[key], urllib2.unquote(val))
+            if hasattr(self, param_map[key]):
+                setattr(self, param_map[key], urllib2.unquote(val))
+            else:
+                # Ignore, the values might be malformed. We're probably not going to use them anyway. This was a problem
+                # for instance with __utmz cookies from boxertv that look like this:
+                # "135403106.1415106706.1.1.utmcsr=Kunder%20eller%20Leads|utmccn=2014-10%20|%20Mersalg%20|%20TV%202-pakken,%20Boxer%20Flex,%20Flex8%20|%20Lancering%20af%20Boxer%20Play|utmcmd=email|utmcct=topbar%20ks"
+                pass
 
         return self
 
