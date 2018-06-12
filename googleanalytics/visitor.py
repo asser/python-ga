@@ -47,7 +47,7 @@ class Visitor(object):
             ip = headers.get('REMOTE_ADDR')
 
         # Double-check if the address has a valid format
-        if not re.match(r'^[\d+]{1,3}\.[\d+]{1,3}\.[\d+]{1,3}\.[\d+]{1,3}$', 
+        if ip and not re.match(r'^[\d+]{1,3}\.[\d+]{1,3}\.[\d+]{1,3}\.[\d+]{1,3}$',
                         ip, re.I):
             ip = None
 
