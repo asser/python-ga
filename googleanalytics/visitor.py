@@ -46,14 +46,15 @@ class Visitor(object):
         except KeyError:
             ip = headers.get('REMOTE_ADDR')
 
-        # Double-check if the address has a valid format
-        if ip and not re.match(r'^[\d+]{1,3}\.[\d+]{1,3}\.[\d+]{1,3}\.[\d+]{1,3}$',
-                        ip, re.I):
-            ip = None
+        if ip:
+            # Double-check if the address has a valid format
+            if re.match(r'^[\d+]{1,3}\.[\d+]{1,3}\.[\d+]{1,3}\.[\d+]{1,3}$',
+                            ip, re.I):
+                ip = None
 
-        # Exclude private IP address ranges
-        if re.match(r'^(?:127\.0\.0\.1|10\.|192\.168\.|172\.(?:1[6-9]|2[0-9]|3[0-1])\.)', ip):
-            ip = None
+            # Exclude private IP address ranges
+            if re.match(r'^(?:127\.0\.0\.1|10\.|192\.168\.|172\.(?:1[6-9]|2[0-9]|3[0-1])\.)', ip):
+                ip = None
 
         self.ip_address = ip
 
